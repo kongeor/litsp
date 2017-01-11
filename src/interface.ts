@@ -4,7 +4,7 @@ export interface Egal {
     equals(rhs) : boolean;
 }
 
-export interface Eval extends Egal {
+export interface Eval extends Egal { //TODO
     eval(env : Environment, args) : Eval;
 }
 
