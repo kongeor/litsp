@@ -1,11 +1,12 @@
-import {Eval, Egal} from './interface';
+import { Eval, Egal } from './interface';
 import Environment from './environment';
+import { List, ISeq } from './seq';
 
-abstract class Atom implements Eval, Egal {
+export abstract class Atom<T> implements Eval, Egal {
 
-    data;
+    data: T;
 
-    constructor(data) {
+    constructor(data: T) {
         this.data = data;
     }
 
@@ -19,12 +20,12 @@ abstract class Atom implements Eval, Egal {
     }
 
     toString(): string {
-        return this.data;
+        return this.data.toString();
     }
 
 }
 
-export class Symb extends Atom {
+export class Symb extends Atom<string> {
 
     constructor(sym : string) {
         super(sym);
@@ -37,3 +38,28 @@ export class Symb extends Atom {
 }
 
 export const TRUE = new Symb("t");
+
+export const FALSE = new List();
+
+export class String extends Atom<string> implements ISeq<String> {
+
+    constructor(data = "") {
+        super(data);
+    }
+
+    eval(env: Environment, args = []): Eval {
+        return this;
+    }
+
+    car(): Symb {
+        return new Symb(this.data.slice(0, 1));
+    }
+
+    cdr(): String {
+        return new String(this.data.slice(1));
+    }
+
+    cons(e: String): String {
+        return new String(e.data + this.data);
+    }
+}

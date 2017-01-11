@@ -1,7 +1,14 @@
-import {Eval, Egal} from './interface';
+import { Atom } from './atom';
+import { Eval, Egal } from './interface';
 import Environment from './environment';
 
-export abstract class Seq implements Eval, Egal {
+export interface ISeq<T> {
+    car:() => Atom<any>; 
+    cdr:() => ISeq<T>;
+    cons: (e: T) => ISeq<T>;
+}
+
+export abstract class Seq<T> implements Eval, Egal, ISeq<T> {
     data: any[];
 
     constructor(data = []) {
@@ -33,9 +40,9 @@ export abstract class Seq implements Eval, Egal {
     }
 }
 
-export class List extends Seq {
+export class List extends Seq<Eval> {
 
-    constructor(data) {
+    constructor(data = []) {
         super(data);
     }
 

@@ -3,12 +3,8 @@ class Environment {
     private binds;
     private level: number;
 
-    constructor(parent: Environment, binds) {
-        if (binds) {
-            this.binds = binds;
-        } else {
-            this.binds = {};
-        }
+    constructor(parent = undefined, binds = {}) {
+        this.binds = binds;
 
         this.parent = parent;
 
