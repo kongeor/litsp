@@ -1,5 +1,5 @@
 import { Lisp } from './lisp';
-import { Symb, String } from './atom';
+import { Symb, Str } from './atom';
 import { Num } from './number';
 import { List } from './seq';
 import { Eval } from './interface';
@@ -96,7 +96,7 @@ export class Reader {
             }
 
             this.next();
-            return new String(str);
+            return new Str(str);
         }
         else {
             let tokenStr = "";

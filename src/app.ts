@@ -1,5 +1,5 @@
 import Environment from "./environment";
-import { TRUE, Symb } from './atom';
+import { TRUE, Symb, Str } from './atom';
 import { Num } from './number';
 import { List } from './seq';
 
@@ -12,12 +12,12 @@ const data2 = {"b" : 2};
 const env2 = new Environment(env, data2);
 
 let list = new List([new Symb("a"),
-                     new String("b"),
+                     new Str("b"),
                      new Num(3)]);
 
 let list2 = new List([new Symb("a"),
-                      new String("b"),
+                      new Str("b"),
                       new Num(4)]);
 
-console.log(list.equals(list2));
-// console.log('yo');
+// console.log(list.equals(list2));
+console.log('yo')

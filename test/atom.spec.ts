@@ -1,10 +1,10 @@
 import * as test from "tape";
-import { Symb, TRUE, FALSE, String } from '../src/atom';
+import { Symb, TRUE, FALSE, Str } from '../src/atom';
 import { List } from '../src/seq';
 import Environment from '../src/environment';
 
 const env = new Environment();
-const str = new String("foo");
+const str = new Str("foo");
 
 test('symbols are equal based on their string values', t => {
     let s1 = new Symb("a");
@@ -34,11 +34,11 @@ test('string car', t => {
 });
 
 test('string cdr', t => {
-    t.true(new String("oo").equals(str.cdr()));
+    t.true(new Str("oo").equals(str.cdr()));
     t.end();
 });
 
 test('string cons', t => {
-    t.true(new String("afoo").equals(str.cons(new String("a"))));
+    t.true(new Str("afoo").equals(str.cons(new Str("a"))));
     t.end();
 });

@@ -2,7 +2,7 @@ import * as test from "tape";
 import { Reader } from '../src/reader';
 import { List } from '../src/seq';
 import { Num } from '../src/number';
-import { String, Symb } from '../src/atom';
+import { Str, Symb } from '../src/atom';
 
 const reader = new Reader();
 
@@ -21,7 +21,7 @@ test('reading nested expr', function (t) {
 test('reading expr - types', function (t) {
     let s = "(a \"b\" 3)";
     t.true(new List([new Symb("a"),
-                     new String("b"),
+                     new Str("b"),
                      new Num(3)]).equals(reader.getSexp(s)));
     t.end();
 });

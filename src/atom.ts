@@ -41,7 +41,7 @@ export const TRUE = new Symb("t");
 
 export const FALSE = new List();
 
-export class String extends Atom<string> implements ISeq<String> {
+export class Str extends Atom<string> implements ISeq<Str> {
 
     constructor(data = "") {
         super(data);
@@ -55,11 +55,11 @@ export class String extends Atom<string> implements ISeq<String> {
         return new Symb(this.data.slice(0, 1));
     }
 
-    cdr(): String {
-        return new String(this.data.slice(1));
+    cdr(): Str {
+        return new Str(this.data.slice(1));
     }
 
-    cons(e: String): String {
-        return new String(e.data + this.data);
+    cons(e: Str): Str {
+        return new Str(e.data + this.data);
     }
 }
