@@ -1,6 +1,7 @@
 import { Lisp } from './lisp';
 import { Symb, String } from './atom';
 import { Num } from './number';
+import { List } from './seq';
 import { Eval } from './interface';
 
 const DELIM = /\(|\)|\s+/;
@@ -10,7 +11,7 @@ export class Reader {
     rawSource: string;
     index = 0;
     length = 0;
-    sexp = [];
+    sexp:Eval;
 
     constructor(str = "") {
         this.rawSource = str;
@@ -20,7 +21,11 @@ export class Reader {
         }
     }
 
-    getSexp(source = ""): [] {
+    isEval(e: Eval | string): e is Eval {
+        return (<Eval>e).eval !== undefined;
+    }
+
+    getSexp(source = ""): Eval {
 
         if (source) {
             this.rawSource = source;
@@ -28,10 +33,12 @@ export class Reader {
             this.index = 0;
         }
 
-        let expr: Eval[] = null;
+        let expr: Array<Eval> = null;
         let token = this.getToken();
 
-        if (typeof token === "string") {
+        if (this.isEval(token)) {
+            return token;
+        } else {
             if (token === ")") {
                 throw new Error("Unexpected right paren");
             } else if (token === "(") {
@@ -39,7 +46,9 @@ export class Reader {
                 let token = this.getToken();
 
                 while (token !== ")") {
-                    if (token === "(") {
+                    if (this.isEval(token)) {
+                        expr.push(token);
+                    } else if (token === "(") {
                         this.prev();
                         let sexp = this.getSexp();
                         if (typeof sexp === "string") {
@@ -48,19 +57,15 @@ export class Reader {
                         } else {
                             expr.push(sexp);
                         }
-                    } else if (token === null) {
+                    }  else if (token === null) {
                         throw new Error("Invalid end of expression: " + this.rawSource);
-                    } else {
-                        expr.push(token);
                     }
+
+                    token = this.getToken();
                 }
-
-
+                return new List(expr);
             }
         }
-
-
-
     }
 
     getToken() : Eval | string {

@@ -21,4 +21,8 @@ export class Num implements Eval, Egal {
         }
         return false;
     }
+
+    toString(): string {
+        return "" + this.data;
+    }
 }
