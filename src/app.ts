@@ -17,7 +17,6 @@ let list = new List([new Symb("a"),
 
 let list2 = new List([new Symb("a"),
                       new Str("b"),
-                      new Num(4)]);
+                      new Num(3)]);
 
-// console.log(list.equals(list2));
-console.log('yo')
+ console.log(list.equals(list2));

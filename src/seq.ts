@@ -1,21 +1,21 @@
-import { Atom } from './atom';
+import { Atom, TRUE, FALSE } from './atom';
 import { Eval, Egal } from './interface';
 import Environment from './environment';
 
 export interface ISeq<T> {
-    car:() => Atom<any>; 
+    car:() => Eval; 
     cdr:() => ISeq<T>;
     cons: (e: T) => ISeq<T>;
 }
 
-export abstract class Seq<T> implements Eval, Egal, ISeq<T> {
-    data: any[];
+export abstract class Seq implements Eval, Egal, ISeq<Eval> {
+    data: Eval[];
 
-    constructor(data = []) {
+    constructor(data:Eval[] = []) {
         this.data = data;
     }
 
-    car () {
+    car(): Eval {
         return this.data[0];
     }
 
@@ -29,7 +29,7 @@ export abstract class Seq<T> implements Eval, Egal, ISeq<T> {
         if (rhs instanceof Seq) {
             if (this.data.length == rhs.data.length) {
                 for (let i=0; i<this.data.length; i++) {
-                    if (this.data[i] !== rhs.data[i]) {
+                    if (!this.data[i].equals(rhs.data[i])) {
                         return false;
                     }
                 }
@@ -40,7 +40,7 @@ export abstract class Seq<T> implements Eval, Egal, ISeq<T> {
     }
 }
 
-export class List extends Seq<Eval> {
+export class List extends Seq {
 
     constructor(data = []) {
         super(data);
