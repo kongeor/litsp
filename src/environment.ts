@@ -1,6 +1,9 @@
+import { Symb } from './atom';
+import { Bindings, Eval } from './interface';
+
 class Environment {
     private parent: Environment;
-    private binds;
+    private binds : Bindings;
     private level: number;
 
     constructor(parent = undefined, binds = {}) {
@@ -15,9 +18,9 @@ class Environment {
         }
     }
 
-    public get(key) {
-        if (this.binds[key]) {
-            return this.binds[key];
+    public get(key: Symb) {
+        if (this.binds[key.data]) {
+            return this.binds[key.data];
         } else if (this.parent) {
             return this.parent.get(key);
         } else {
@@ -25,13 +28,13 @@ class Environment {
         }
     }
 
-    public set(key, value) {
-        if (this.binds[key]) {
-            this.binds[key] = value;
-        } else if (self.parent) {
+    public set(key: Symb, value: Eval) {
+        if (this.binds[key.data]) {
+            this.binds[key.data] = value;
+        } else if (this.parent) {
             this.parent.set(key, value);
         } else {
-            this.binds[key] = value;
+            this.binds[key.data] = value;
         }
     }
 

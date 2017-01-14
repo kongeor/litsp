@@ -10,7 +10,7 @@ export abstract class Atom<T> implements Eval, Egal {
         this.data = data;
     }
 
-    abstract eval(env: Environment, args): Eval;
+    abstract eval(env: Environment, args: Eval[]): Eval;
 
     equals(rhs) : boolean {
         if (rhs instanceof Atom) {
@@ -27,12 +27,12 @@ export abstract class Atom<T> implements Eval, Egal {
 
 export class Symb extends Atom<string> {
 
-    constructor(sym : string) {
+    constructor(sym: string) {
         super(sym);
     }
 
-    eval(env: Environment, args): Eval {
-        return env.get(this.data);
+    eval(env: Environment, args: Eval[]): Eval {
+        return env.get(this);
     }
 
 }
@@ -47,7 +47,7 @@ export class Str extends Atom<string> implements ISeq<Str> {
         super(data);
     }
 
-    eval(env: Environment, args = []): Eval {
+    eval(env: Environment, args = []): Str {
         return this;
     }
 

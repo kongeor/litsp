@@ -5,7 +5,7 @@ export interface Egal {
 }
 
 export interface Eval extends Egal { //TODO
-    eval(env : Environment, args) : Eval;
+    eval(env : Environment, args?: Eval[]) : Eval;
 }
 
 

@@ -19,11 +19,11 @@ export abstract class Seq implements Eval, Egal, ISeq<Eval> {
         return this.data[0];
     }
 
-    abstract cdr();
+    abstract cdr(): Seq;
 
-    abstract cons(e);
+    abstract cons(e): Seq;
 
-    abstract eval(env: Environment, args): Eval;
+    abstract eval(env: Environment, args: Eval[]): Eval;
 
     equals(rhs) : boolean {
         if (rhs instanceof Seq) {
@@ -59,7 +59,7 @@ export class List extends Seq {
     eval(env: Environment, args): Eval {
         let form = this.car();
 
-        return form.eval(env, this.cdr());
+        return form.eval(env, this.cdr().data);
     }
 
     toString(): string {
