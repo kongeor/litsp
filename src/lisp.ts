@@ -1,5 +1,5 @@
 import { TRUE, FALSE } from './atom';
-import { List } from './seq';
+import { List, Seq } from './seq';
 import Environment from './environment';
 import { Eval } from './interface';
 
@@ -30,5 +30,19 @@ export class Lisp {
             throw new Error(`Wrong number of arguments, expected 1, got ${args.length}`);
         }
         return args[0];
+    }
+
+    car(env: Environment, args: Eval[]): Eval {
+        if (args.length != 1) {
+            throw new Error(`Wrong number of arguments, expected 1, got ${args.length}`);
+        }
+
+        let cell = args[0].eval(env);
+
+        if (cell instanceof Seq) {
+            return cell.car();
+        } else {
+            throw new Error(`Function car not valid on non-sequence type: ${cell}`); // TODO data not present on interface
+        }
     }
 }

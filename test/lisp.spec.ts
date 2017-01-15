@@ -5,7 +5,7 @@ import { Lisp } from '../src/lisp';
 import { List } from '../src/seq';
 import Environment from '../src/environment';
 
-const env = new Environment();
+let env;
 const str1 = new Str("foo");
 const str2 = new Str("bar");
 
@@ -16,6 +16,7 @@ const s3 = new Symb("s3");
 const lisp = new Lisp();
 
 test('cond test', t => {
+    env = new Environment();
     env.set(s1, FALSE);
     env.set(s2, TRUE);
     env.set(s3, str1);
@@ -27,5 +28,13 @@ test('cond test', t => {
 
 test('quote test', t => {
     t.valEqual(s1, s1);
+    t.end();
+});
+
+test('car test', t => {
+    env = new Environment();
+    let list1 = new List([str1]);
+    env.set(s1, list1);
+    t.valEqual(lisp.car(env, [s1]), str1);
     t.end();
 });
