@@ -2,9 +2,21 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "0.1.0",
-    "command": "tsc",
+    "command": "sh",
     "isShellCommand": true,
-    "args": ["-p", "."],
+    "args": ["-c"],
     "showOutput": "silent",
-    "problemMatcher": "$tsc"
+    "tasks": [
+        {
+            "taskName": "tsc",
+            "suppressTaskName": true,
+            "args": ["tsc", "-p", "."]
+        },
+        {
+            "taskName": "tape",
+            "suppressTaskName": true,
+            "args": ["npm run test"]
+
+        }
+    ]
 }
