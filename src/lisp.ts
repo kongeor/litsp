@@ -24,4 +24,11 @@ export class Lisp {
         }
         return FALSE;
     }
+
+    quote(env: Environment, args: Eval[]): Eval {
+        if (args.length != 1) {
+            throw new Error(`Wrong number of arguments, expected 1, got ${args.length}`);
+        }
+        return args[0];
+    }
 }

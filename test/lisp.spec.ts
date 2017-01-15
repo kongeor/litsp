@@ -1,4 +1,5 @@
 import * as test from "tape";
+import * as util from "./util.spec";
 import { Symb, TRUE, FALSE, Str } from '../src/atom';
 import { Lisp } from '../src/lisp';
 import { List } from '../src/seq';
@@ -20,6 +21,11 @@ test('cond test', t => {
     env.set(s3, str1);
     let list1 = new List([s1, s2]);
     let list2 = new List([s2, s3]);
-    t.true(lisp.cond(env, [list1, list2]).equals(str1));
+    t.valEqual(lisp.cond(env, [list1, list2]), str1);
+    t.end();
+});
+
+test('quote test', t => {
+    t.valEqual(s1, s1);
     t.end();
 });

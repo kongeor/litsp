@@ -1,4 +1,5 @@
 import * as test from "tape";
+import * as util from './util.spec';
 import { Reader } from '../src/reader';
 import { List } from '../src/seq';
 import { Num } from '../src/number';
@@ -20,8 +21,8 @@ test('reading nested expr', function (t) {
 
 test('reading expr - types', function (t) {
     let s = "(a \"b\" 3)";
-    t.true(new List([new Symb("a"),
-                     new Str("b"),
-                     new Num(3)]).equals(reader.getSexp(s)));
+    t.valEqual(new List([new Symb("a"),
+                         new Str("b"),
+                         new Num(3)]), reader.getSexp(s));
     t.end();
 });
