@@ -48,3 +48,26 @@ test('car test', t => {
     t.valEqual(lisp.cons(env, [s1, s2]), new List([str1, str2]));
     t.end();
 });
+
+test('atom test for FALSE Symb', t => {
+    env = new Environment();
+    env.set(s1, FALSE);
+    t.valEqual(lisp.atom(env, [s1]), TRUE);
+    t.end();
+});
+
+test('atom test for empty list', t => {
+    env = new Environment();
+    let list = new List();
+    env.set(s1, list);
+    t.valEqual(lisp.atom(env, [s1]), TRUE);
+    t.end();
+});
+
+test('atom test for list with one element', t => {
+    const env2 = new Environment();
+    let list = new List([str1, str2]);
+    env2.set(s1, list);
+    t.valEqual(lisp.atom(env2, [s1]), FALSE);
+    t.end();
+});

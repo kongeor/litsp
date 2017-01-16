@@ -1,4 +1,4 @@
-import { TRUE, FALSE } from './atom';
+import { TRUE, FALSE, Symb } from './atom';
 import { List, Seq } from './seq';
 import Environment from './environment';
 import { Eval } from './interface';
@@ -73,5 +73,20 @@ export class Lisp {
         } else {
             throw new Error(`Function cons not valid on non-sequence type: ${second}`); // TODO data not present on interface
         }
+    }
+
+    atom(env: Environment, args: Eval[]): Eval {
+        if (args.length != 1) {
+            throw new Error(`Wrong number of arguments, expected 1, got ${args.length}`);
+        }
+
+        const first = args[0].eval(env);
+
+        if (first.equals(FALSE)) {
+            return TRUE;
+        } else if (first instanceof Symb) {
+            return TRUE;
+        }
+        return FALSE;
     }
 }

@@ -2,6 +2,7 @@ import Environment from "./environment";
 import { TRUE, Symb, Str } from './atom';
 import { Num } from './number';
 import { List } from './seq';
+import { Lisp } from './lisp';
 
 const data = {"a" : 1};
 
@@ -20,3 +21,12 @@ let list2 = new List([new Symb("a"),
                       new Num(3)]);
 
  console.log(list.equals(list2));
+
+
+ const env3 = new Environment();
+ let list3 = new List();
+ const s3 = new Symb("s3");
+ env.set(s3, list3);
+ const lisp = new Lisp();
+ const e = lisp.atom(env, [s3]);
+ console.log(e);
