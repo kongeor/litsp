@@ -4,7 +4,7 @@
   "description": "A lisp interpreter written in typescript (port of lithp)",
   "main": "index.js",
   "scripts": {
-    "test": "ts-node node_modules/tape/bin/tape test/**/*.ts | tap-dot"
+    "test": "ts-node node_modules/tape/bin/tape test/**/*.ts | faucet"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/kongeor/litsp#readme",
   "devDependencies": {
     "@types/tape": "4.2.28",
-    "tap-dot": "^1.0.5",
+    "faucet": "0.0.1",
     "tape": "4.6.3",
     "ts-node": "2.0.0",
     "typescript": "2.1.4"
