@@ -32,7 +32,7 @@ test('list cons', function (t) {
 });
 
 test('car of empty', function (t) {
-    t.equal(new List([]).car(), undefined);
+    t.equal(new List([]).car(), undefined); // FIXME?
     t.end();
 });
 
