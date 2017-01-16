@@ -1,4 +1,6 @@
 import * as test from "tape";
+import * as util from "./util.spec";
+
 import { List } from '../src/seq';
 import { Symb } from '../src/atom';
 
@@ -25,7 +27,7 @@ test('list cdr', function (t) {
 });
 
 test('list cons', function (t) {
-    t.true(list.cons(d).equals(new List([a, b, c, d])));
+    t.valEqual(list.cons(d), new List([d, a, b, c]));
     t.end();
 });
 

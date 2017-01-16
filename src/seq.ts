@@ -51,9 +51,7 @@ export class List extends Seq {
     }
 
     cons(e) {
-        let [...xs] = this.data;
-        xs.push(e);
-        return new List(xs);
+        return new List([e, ...this.data]);
     }
 
     eval(env: Environment, args): Eval {

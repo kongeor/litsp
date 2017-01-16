@@ -1,5 +1,6 @@
 import * as test from "tape";
 import * as util from "./util.spec";
+
 import { Symb, TRUE, FALSE, Str } from '../src/atom';
 import { Lisp } from '../src/lisp';
 import { List } from '../src/seq';
@@ -36,5 +37,14 @@ test('car test', t => {
     let list1 = new List([str1]);
     env.set(s1, list1);
     t.valEqual(lisp.car(env, [s1]), str1);
+    t.end();
+});
+
+test('car test', t => {
+    env = new Environment();
+    let list = new List([str2]);
+    env.set(s1, str1);
+    env.set(s2, list);
+    t.valEqual(lisp.cons(env, [s1, s2]), new List([str1, str2]));
     t.end();
 });
