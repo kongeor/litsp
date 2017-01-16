@@ -89,4 +89,13 @@ export class Lisp {
         }
         return FALSE;
     }
+
+    label(env: Environment, args: Eval[]): Eval {
+        if (args.length != 2) {
+            throw new Error(`Wrong number of arguments, expected 2, got ${args.length}`);
+        }
+
+        env.set(args[0].data, args[1].eval(env));
+        return env.get(args[0].data);
+    }
 }

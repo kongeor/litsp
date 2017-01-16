@@ -65,9 +65,15 @@ test('atom test for empty list', t => {
 });
 
 test('atom test for list with one element', t => {
-    const env2 = new Environment();
+    env = new Environment();
     let list = new List([str1, str2]);
-    env2.set(s1, list);
-    t.valEqual(lisp.atom(env2, [s1]), FALSE);
+    env.set(s1, list);
+    t.valEqual(lisp.atom(env, [s1]), FALSE);
+    t.end();
+});
+
+test('label test', t => {
+    env = new Environment();
+    t.valEqual(lisp.label(env, [s1, str1]), str1);
     t.end();
 });
