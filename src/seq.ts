@@ -55,7 +55,7 @@ export class List extends Seq {
     }
 
     eval(env: Environment, args): Eval {
-        let form = this.car();
+        let form = this.car().eval(env);
 
         return form.eval(env, this.cdr().data);
     }

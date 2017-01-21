@@ -36,7 +36,9 @@ export class Reader {
         let expr: Array<Eval> = null;
         let token = this.getToken();
 
-        if (this.isEval(token)) {
+        if (token == null) {
+            return null;
+        } else if (this.isEval(token)) {
             return token;
         } else {
             if (token === ")") {
