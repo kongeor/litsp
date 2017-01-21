@@ -10,7 +10,7 @@ export class Func implements Eval {
     hint: string;
 
 
-    constructor(fn: (env: Environment, args: Eval[]) => Eval, hint?: string) {
+    constructor(fn: (env: Environment, args: Eval[]) => Eval, hint: string) {
         this.fn = fn;
         this.hint = hint;
     }
@@ -26,7 +26,44 @@ export class Func implements Eval {
 
     // TODO interface
     toString(): string {
-        return `<built-in function ${this.fn}`;
+        return `<built-in function ${this.hint}`;
     }
 
+}
+
+export class Lambda implements Eval {
+
+    data: Eval; // TODO
+    names;
+    body;
+
+    constructor(names, body) {
+        this.names = names;
+        this.body = body;
+    }
+
+    pushBindings(containingEnv: Environment, values): void {
+        containingEnv.push();
+
+        this.setBindings(containingEnv, values);
+    }
+
+    setBindings(containingEnv: Environment, values): void {
+        for (let i=0; i<values.length; i++) {
+            // containingEnv. TODO
+        }
+    }
+
+    eval(env: Environment, args: Eval[]): Eval {
+        // TODO implement
+        return null;
+    }
+
+    equals(rhs) {
+        return false; // TODO
+    }
+
+    toString(): string {
+        return "<lambda ?>"; // TODO unique
+    }
 }

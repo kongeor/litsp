@@ -6,11 +6,11 @@ import { Lisp } from './lisp';
 import { Litsp } from './litsp';
 
 function test1() {
-    const data = { "a": 1 };
+    const data = { "a": new Num(1) };
 
     const env = new Environment(null, data);
 
-    const data2 = { "b": 2 };
+    const data2 = { "b": new Num(2) };
 
     const env2 = new Environment(env, data2);
 
@@ -36,7 +36,11 @@ function test1() {
 
 const litsp = new Litsp();
 
-let program = `(cons 1 (quote (2 3)))`;
+let program = `
+(label a 2)
+
+(cons a (quote (1 3)))
+`;
 
 let result = litsp.process(program);
-console.log(result);
+console.log(result.toString());

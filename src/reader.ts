@@ -75,7 +75,7 @@ export class Reader {
             return null; // TODO check
         }
 
-        while (this.index < this.length && this.current() === " ") {
+        while (this.index < this.length && /\s/.test(this.current())) {
             this.next();
         }
 

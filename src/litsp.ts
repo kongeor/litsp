@@ -21,12 +21,14 @@ export class Litsp extends Lisp {
 
     init(): void {
         this.environment.set(new Symb("eq"), new Func(this.eq, "eq"));
-        this.environment.set(new Symb("quote"), new Func(this.quote));
-        this.environment.set(new Symb("car"), new Func(this.car));
-        this.environment.set(new Symb("cdr"), new Func(this.cdr));
-        this.environment.set(new Symb("cons"), new Func(this.cons));
-        this.environment.set(new Symb("atom"), new Func(this.atom));
-        this.environment.set(new Symb("cond"), new Func(this.cond));
+        this.environment.set(new Symb("quote"), new Func(this.quote, "quote"));
+        this.environment.set(new Symb("car"), new Func(this.car, "car"));
+        this.environment.set(new Symb("cdr"), new Func(this.cdr, "cdr"));
+        this.environment.set(new Symb("cons"), new Func(this.cons, "cons"));
+        this.environment.set(new Symb("atom"), new Func(this.atom, "atom"));
+        this.environment.set(new Symb("cond"), new Func(this.cond, "cond"));
+
+        this.environment.set(new Symb("label"), new Func(this.label, "label"));
     }
 
     process(source: string): Eval {

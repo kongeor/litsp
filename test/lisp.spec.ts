@@ -75,5 +75,6 @@ test('atom test for list with one element', t => {
 test('label test', t => {
     env = new Environment();
     t.valEqual(lisp.label(env, [s1, str1]), str1);
+    t.valEqual(lisp.eq(env, [s1, str1]), TRUE);
     t.end();
 });

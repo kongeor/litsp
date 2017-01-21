@@ -6,7 +6,7 @@ class Environment {
     private binds : Bindings;
     private level: number;
 
-    constructor(parent = undefined, binds = {}) {
+    constructor(parent = undefined, binds:Bindings = {}) {
         this.binds = binds;
 
         this.parent = parent;
@@ -42,7 +42,7 @@ class Environment {
         return !!this.binds[key];
     }
 
-    public push(binds) : Environment {
+    public push(binds:Bindings = {}) : Environment {
         return new Environment(this, binds);
     }
 
