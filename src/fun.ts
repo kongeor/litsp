@@ -1,6 +1,8 @@
 import { Eval } from './interface';
 import { FALSE } from './atom';
+import { List } from './seq';
 import Environment from './environment';
+import { Litsp } from './litsp';
 
 
 export class Func implements Eval {
@@ -34,29 +36,44 @@ export class Func implements Eval {
 export class Lambda implements Eval {
 
     data: Eval; // TODO
-    names;
-    body;
+    names: List;
+    body: List[];
 
-    constructor(names, body) {
+    constructor(names: List, body: List[]) {
         this.names = names;
         this.body = body;
     }
 
-    pushBindings(containingEnv: Environment, values): void {
+    pushBindings(containingEnv: Litsp, values): void {
         containingEnv.push();
 
         this.setBindings(containingEnv, values);
     }
 
-    setBindings(containingEnv: Environment, values): void {
+    setBindings(containingEnv: Litsp, values): void {
         for (let i=0; i<values.length; i++) {
-            // containingEnv. TODO
+            containingEnv.environment.binds[this.names.data[i].data] = 
+                values[i].eval(containingEnv.environment);
         }
     }
 
     eval(env: Environment, args: Eval[]): Eval {
-        // TODO implement
-        return null;
+        if (args.length != this.names.length()) {
+            throw new Error(`Wrong number of arguments, expected ${this.names.length()}, got ${args.length}`);
+        }
+
+        const LITSP: Litsp = env.get("__litsp__");
+
+        this.pushBindings(LITSP, args);
+
+        let ret: Eval = FALSE;
+
+        for (let form of this.body) {
+            ret = form.eval(LITSP.environment);
+        }
+
+        LITSP.pop();
+        return ret;
     }
 
     equals(rhs) {

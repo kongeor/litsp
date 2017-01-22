@@ -1,9 +1,10 @@
 import { Symb } from './atom';
 import { Bindings, Eval } from './interface';
+import { Litsp } from './litsp';
 
 class Environment {
     private parent: Environment;
-    private binds : Bindings;
+    binds : Bindings;
     private level: number;
 
     constructor(parent = undefined, binds:Bindings = {}) {
@@ -18,17 +19,23 @@ class Environment {
         }
     }
 
-    public get(key: Symb) {
-        if (this.binds[key.data]) {
-            return this.binds[key.data];
+    public get(key: Symb | string) {
+        let k;
+        if (key instanceof Symb) {
+            k = key.data;
+        } else {
+            k = key;
+        }
+        if (this.binds[k]) {
+            return this.binds[k];
         } else if (this.parent) {
             return this.parent.get(key);
         } else {
-            throw new Error("Invalid symbol " + key);
+            throw new Error("Invalid symbol " + k);
         }
     }
 
-    public set(key: Symb, value: Eval) {
+    public set(key: Symb, value: Eval | Litsp) {
         if (this.binds[key.data]) {
             this.binds[key.data] = value;
         } else if (this.parent) {

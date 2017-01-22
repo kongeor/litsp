@@ -59,6 +59,10 @@ export class Str extends Atom<string> implements ISeq<Str> {
         return new Str(this.data.slice(1));
     }
 
+    length(): Number {
+        return this.data.length;
+    }
+
     cons(e: Str): Str {
         return new Str(e.data + this.data);
     }

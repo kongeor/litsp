@@ -37,9 +37,10 @@ function test1() {
 const litsp = new Litsp();
 
 let program = `
-(label a 2)
+(label foo (lambda (x xs)
+              (cons x xs)))
 
-(cons a (quote (1 3)))
+(foo 1 (quote (2 3)))
 `;
 
 let result = litsp.process(program);

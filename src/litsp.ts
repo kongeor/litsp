@@ -1,7 +1,8 @@
 import { Lisp } from './lisp';
 import { Eval } from './interface';
-import { Func } from './fun';
+import { Func, Lambda } from './fun';
 import { Symb, FALSE } from './atom';
+import { List } from './seq';
 import { Reader } from './reader';
 import Environment from './environment';
 
@@ -28,7 +29,10 @@ export class Litsp extends Lisp {
         this.environment.set(new Symb("atom"), new Func(this.atom, "atom"));
         this.environment.set(new Symb("cond"), new Func(this.cond, "cond"));
 
+        this.environment.set(new Symb("lambda"), new Func(this.lambda_, "lambda"));
         this.environment.set(new Symb("label"), new Func(this.label, "label"));
+
+        this.environment.set(new Symb("__litsp__"), this);
     }
 
     process(source: string): Eval {
@@ -56,5 +60,21 @@ export class Litsp extends Lisp {
             console.error(e);
             return FALSE;
         }
+    }
+
+    push(env: Environment = null) {
+        if (env) {
+            this.environment = this.environment.push(env.binds); // TODO check?
+        } else {
+            this.environment = this.environment.push();
+        }
+    }
+
+    pop() {
+        this.environment = this.environment.pop();
+    }
+
+    lambda_ (env: Environment, [x, ...xs]: List[]) {
+        return new Lambda(x, xs);
     }
 }

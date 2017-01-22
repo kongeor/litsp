@@ -6,6 +6,7 @@ export interface ISeq<T> {
     car:() => Eval; 
     cdr:() => ISeq<T>;
     cons: (e: T) => ISeq<T>;
+    length: () => Number;
 }
 
 export abstract class Seq implements Eval, Egal, ISeq<Eval> {
@@ -24,6 +25,8 @@ export abstract class Seq implements Eval, Egal, ISeq<Eval> {
     abstract cons(e): Seq;
 
     abstract eval(env: Environment, args: Eval[]): Eval;
+
+    abstract length(): Number;
 
     equals(rhs) : boolean {
         if (rhs instanceof Seq) {
@@ -54,10 +57,14 @@ export class List extends Seq {
         return new List([e, ...this.data]);
     }
 
-    eval(env: Environment, args): Eval {
+    eval(env: Environment, args: Eval[] = []): Eval {
         let form = this.car().eval(env);
 
         return form.eval(env, this.cdr().data);
+    }
+
+    length(): Number {
+        return this.data.length;
     }
 
     toString(): string {

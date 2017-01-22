@@ -1,4 +1,5 @@
 import Environment from './environment';
+import { Litsp } from './litsp';
 
 export interface Egal {
     equals(rhs) : boolean;
@@ -11,5 +12,5 @@ export interface Eval extends Egal { //TODO
 
 
 export interface Bindings {
-    [propName: string]: Eval;
+    [propName: string]: Eval | Litsp;
 }
