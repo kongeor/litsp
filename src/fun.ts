@@ -28,20 +28,27 @@ export class Func implements Eval {
 
     // TODO interface
     toString(): string {
-        return `<built-in function ${this.hint}`;
+        return `<built-in function ${this.hint}>`;
     }
 
 }
 
+class LambdaId {
+    static id = 0;
+}
+
 export class Lambda implements Eval {
+
 
     data: Eval; // TODO
     names: List;
     body: List[];
+    id: number;
 
     constructor(names: List, body: List[]) {
         this.names = names;
         this.body = body;
+        this.id = LambdaId.id++;
     }
 
     pushBindings(containingEnv: Litsp, values): void {
@@ -81,6 +88,6 @@ export class Lambda implements Eval {
     }
 
     toString(): string {
-        return "<lambda ?>"; // TODO unique
+        return `<lambda ${this.id}>`; // TODO unique
     }
 }

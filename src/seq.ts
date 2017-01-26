@@ -2,7 +2,7 @@ import { Atom, TRUE, FALSE } from './atom';
 import { Eval, Egal } from './interface';
 import Environment from './environment';
 
-export interface ISeq<T> {
+export interface ISeq<T> extends Eval { //yey!
     car:() => Eval; 
     cdr:() => ISeq<T>;
     cons: (e: T) => ISeq<T>;

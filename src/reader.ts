@@ -22,7 +22,7 @@ export class Reader {
     }
 
     isEval(e: Eval | string): e is Eval {
-        return (<Eval>e).eval !== undefined;
+        return e && (<Eval>e).eval !== undefined;
     }
 
     getSexp(source = ""): Eval {

@@ -1,10 +1,14 @@
 import { TRUE, FALSE, Symb } from './atom';
-import { List, Seq } from './seq';
+import { List, ISeq, Seq } from './seq';
 import Environment from './environment';
 import { Eval } from './interface';
 
 export class Lisp {
     static readonly SPECIAL = "()";
+
+    private isISeq(e): e is ISeq<any> {
+        return e && (<ISeq<any>>e).cdr !== undefined;
+    }
 
     cond(env: Environment, args: List[]): Eval {
         for (let test of args) {
@@ -39,7 +43,7 @@ export class Lisp {
 
         let cell = args[0].eval(env);
 
-        if (cell instanceof Seq) {
+        if (this.isISeq(cell)) {
             return cell.car();
         } else {
             throw new Error(`Function car not valid on non-sequence type: ${cell}`); // TODO data not present on interface
@@ -53,7 +57,7 @@ export class Lisp {
 
         let cell = args[0].eval(env);
 
-        if (cell instanceof Seq) {
+        if (this.isISeq(cell)) {
             return cell.cdr();
         } else {
             throw new Error(`Function car not valid on non-sequence type: ${cell}`); // TODO data not present on interface
@@ -68,7 +72,7 @@ export class Lisp {
         const first = args[0].eval(env);
         const second = args[1].eval(env);
 
-        if (second instanceof Seq) {
+        if (this.isISeq(second)) {
             return second.cons(first);
         } else {
             throw new Error(`Function cons not valid on non-sequence type: ${second}`); // TODO data not present on interface
