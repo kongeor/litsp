@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "amd",
-        "outFile": "build/litsp.js",
+        "module": "commonjs",
+        "outDir": "build/",
         "sourceMap": true 
     },
     "include": [
