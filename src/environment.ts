@@ -35,13 +35,19 @@ class Environment {
         }
     }
 
-    public set(key: Symb, value: Eval | Litsp) {
-        if (this.binds[key.data]) {
-            this.binds[key.data] = value;
+    public set(key: Symb | string, value: Eval | Litsp | Environment) {
+        let k;
+        if (key instanceof Symb) {
+            k = key.data;
+        } else {
+            k = key;
+        }
+        if (this.binds[k]) {
+            this.binds[k] = value;
         } else if (this.parent) {
             this.parent.set(key, value);
         } else {
-            this.binds[key.data] = value;
+            this.binds[k] = value;
         }
     }
 

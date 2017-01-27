@@ -12,5 +12,5 @@ export interface Eval extends Egal { //TODO
 
 
 export interface Bindings {
-    [propName: string]: Eval | Litsp;
+    [propName: string]: Eval | Litsp | Environment;
 }

@@ -6,7 +6,8 @@ import { Eval } from './interface';
 export class Lisp {
     static readonly SPECIAL = "()";
 
-    private isISeq(e): e is ISeq<any> {
+    // TODO move to Seq
+    static isISeq(e): e is ISeq<any> {
         return e && (<ISeq<any>>e).cdr !== undefined;
     }
 
@@ -43,7 +44,7 @@ export class Lisp {
 
         let cell = args[0].eval(env);
 
-        if (this.isISeq(cell)) {
+        if (Lisp.isISeq(cell)) {
             return cell.car();
         } else {
             throw new Error(`Function car not valid on non-sequence type: ${cell}`); // TODO data not present on interface
@@ -57,7 +58,7 @@ export class Lisp {
 
         let cell = args[0].eval(env);
 
-        if (this.isISeq(cell)) {
+        if (Lisp.isISeq(cell)) {
             return cell.cdr();
         } else {
             throw new Error(`Function car not valid on non-sequence type: ${cell}`); // TODO data not present on interface
@@ -72,7 +73,7 @@ export class Lisp {
         const first = args[0].eval(env);
         const second = args[1].eval(env);
 
-        if (this.isISeq(second)) {
+        if (Lisp.isISeq(second)) {
             return second.cons(first);
         } else {
             throw new Error(`Function cons not valid on non-sequence type: ${second}`); // TODO data not present on interface

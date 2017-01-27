@@ -1,6 +1,6 @@
 import { Lisp } from './lisp';
 import { Eval, Bindings } from './interface';
-import { Func, Lambda } from './fun';
+import { Func, Lambda, Closure } from './fun';
 import { Symb, FALSE } from './atom';
 import { List } from './seq';
 import { Reader } from './reader';
@@ -11,11 +11,26 @@ export class Litsp extends Lisp {
     environment: Environment;
     reader: Reader;
 
+    closures: boolean;
+
+    lambda_: (env: Environment, [x, ...xs]: List[]) => Lambda;
+    
     constructor() {
         super();
 
         this.environment = new Environment();
         this.reader = new Reader();
+
+        this.closures = true;
+
+        // preserve lexical scope
+        this.lambda_ = (env: Environment, [x, ...xs]: List[]): Lambda => {
+            if (this.environment != env.get("__global__") && this.closures) {
+                return new Closure(env, x, xs);
+            } else {
+                return new Lambda(x, xs);
+            }
+        }
 
         this.init();
     }
@@ -33,6 +48,7 @@ export class Litsp extends Lisp {
         this.environment.set(new Symb("label"), new Func(this.label, "label"));
 
         this.environment.set(new Symb("__litsp__"), this);
+        this.environment.set(new Symb("__global__"), this.environment);
     }
 
     process(source: string): Eval {
@@ -70,7 +86,4 @@ export class Litsp extends Lisp {
         this.environment = this.environment.pop();
     }
 
-    lambda_ (env: Environment, [x, ...xs]: List[]) {
-        return new Lambda(x, xs);
-    }
 }

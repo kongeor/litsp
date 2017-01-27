@@ -37,9 +37,10 @@ function test1() {
 const litsp = new Litsp();
 
 let program = `
-(label pair (lambda (x y)
-              (cons x (cons y (quote ())))))
-(((lambda (x) (lambda (y) (pair x y))) 3) 4)
+(((lambda (x) (lambda (y) (cons x (cons y (quote ()))))) 3) 4)
+
+(cons "a" "bc")
+(cdr "abc")
 `;
 
 let result = litsp.process(program);

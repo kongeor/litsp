@@ -76,8 +76,6 @@ export class Lambda implements Eval {
         let ret: Eval = FALSE;
 
         for (let form of this.body) {
-            console.log(form);
-            console.log(LITSP.environment.toString());
             ret = form.eval(LITSP.environment);
         }
 
