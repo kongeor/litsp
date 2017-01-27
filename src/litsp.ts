@@ -1,5 +1,5 @@
 import { Lisp } from './lisp';
-import { Eval } from './interface';
+import { Eval, Bindings } from './interface';
 import { Func, Lambda } from './fun';
 import { Symb, FALSE } from './atom';
 import { List } from './seq';
@@ -62,12 +62,8 @@ export class Litsp extends Lisp {
         }
     }
 
-    push(env: Environment = null) {
-        if (env) {
-            this.environment = this.environment.push(env.binds); // TODO check?
-        } else {
-            this.environment = this.environment.push();
-        }
+    push(binds: Bindings = {}) {
+        this.environment = this.environment.push(binds); // TODO check?
     }
 
     pop() {

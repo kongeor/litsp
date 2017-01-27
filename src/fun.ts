@@ -76,6 +76,8 @@ export class Lambda implements Eval {
         let ret: Eval = FALSE;
 
         for (let form of this.body) {
+            console.log(form);
+            console.log(LITSP.environment.toString());
             ret = form.eval(LITSP.environment);
         }
 
@@ -89,5 +91,25 @@ export class Lambda implements Eval {
 
     toString(): string {
         return `<lambda ${this.id}>`; // TODO unique
+    }
+}
+
+export class Closure extends Lambda {
+
+    env: Environment;
+
+    constructor(env: Environment, names: List, body: List[]) {
+        super(names, body);
+        this.env = env;
+    }
+
+    pushBindings(containingEnv: Litsp, values): void {
+        containingEnv.push(this.env.binds);
+
+        this.setBindings(containingEnv, values)
+    }
+
+    toString(): string {
+        return `<lexical closure ${this.id}>`;
     }
 }

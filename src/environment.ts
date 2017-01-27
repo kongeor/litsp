@@ -5,7 +5,7 @@ import { Litsp } from './litsp';
 class Environment {
     private parent: Environment;
     binds : Bindings;
-    private level: number;
+    level: number;
 
     constructor(parent = undefined, binds:Bindings = {}) {
         this.binds = binds;
@@ -55,6 +55,16 @@ class Environment {
 
     public pop() : Environment {
         return this.parent;
+    }
+
+    toString(): string {
+        let s = "Environment ${this.level}\n";
+
+        for (let key in this.binds) {
+            s += `\t${key} : ${this.binds[key]}\n`;
+        }
+
+        return s;
     }
 }
 
