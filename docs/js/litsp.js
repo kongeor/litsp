@@ -65,11 +65,15 @@ define("seq", ["require", "exports"], function (require, exports) {
     }(Seq));
     exports.List = List;
 });
-define("lisp", ["require", "exports", "atom", "seq"], function (require, exports, atom_1, seq_1) {
+define("lisp", ["require", "exports", "atom"], function (require, exports, atom_1) {
     "use strict";
     var Lisp = (function () {
         function Lisp() {
         }
+        // TODO move to Seq
+        Lisp.isISeq = function (e) {
+            return e && e.cdr !== undefined;
+        };
         Lisp.prototype.cond = function (env, args) {
             for (var _i = 0, args_1 = args; _i < args_1.length; _i++) {
                 var test = args_1[_i];
@@ -99,7 +103,7 @@ define("lisp", ["require", "exports", "atom", "seq"], function (require, exports
                 throw new Error("Wrong number of arguments, expected 1, got " + args.length);
             }
             var cell = args[0].eval(env);
-            if (cell instanceof seq_1.Seq) {
+            if (Lisp.isISeq(cell)) {
                 return cell.car();
             }
             else {
@@ -111,7 +115,7 @@ define("lisp", ["require", "exports", "atom", "seq"], function (require, exports
                 throw new Error("Wrong number of arguments, expected 1, got " + args.length);
             }
             var cell = args[0].eval(env);
-            if (cell instanceof seq_1.Seq) {
+            if (Lisp.isISeq(cell)) {
                 return cell.cdr();
             }
             else {
@@ -124,7 +128,7 @@ define("lisp", ["require", "exports", "atom", "seq"], function (require, exports
             }
             var first = args[0].eval(env);
             var second = args[1].eval(env);
-            if (second instanceof seq_1.Seq) {
+            if (Lisp.isISeq(second)) {
                 return second.cons(first);
             }
             else {
@@ -172,15 +176,22 @@ define("fun", ["require", "exports", "atom"], function (require, exports, atom_2
         };
         // TODO interface
         Func.prototype.toString = function () {
-            return "<built-in function " + this.hint;
+            return "<built-in function " + this.hint + ">";
         };
         return Func;
     }());
     exports.Func = Func;
+    var LambdaId = (function () {
+        function LambdaId() {
+        }
+        return LambdaId;
+    }());
+    LambdaId.id = 0;
     var Lambda = (function () {
         function Lambda(names, body) {
             this.names = names;
             this.body = body;
+            this.id = LambdaId.id++;
         }
         Lambda.prototype.pushBindings = function (containingEnv, values) {
             containingEnv.push();
@@ -210,11 +221,28 @@ define("fun", ["require", "exports", "atom"], function (require, exports, atom_2
             return false; // TODO
         };
         Lambda.prototype.toString = function () {
-            return "<lambda ?>"; // TODO unique
+            return "<lambda " + this.id + ">"; // TODO unique
         };
         return Lambda;
     }());
     exports.Lambda = Lambda;
+    var Closure = (function (_super) {
+        __extends(Closure, _super);
+        function Closure(env, names, body) {
+            var _this = _super.call(this, names, body) || this;
+            _this.env = env;
+            return _this;
+        }
+        Closure.prototype.pushBindings = function (containingEnv, values) {
+            containingEnv.push(this.env.binds);
+            this.setBindings(containingEnv, values);
+        };
+        Closure.prototype.toString = function () {
+            return "<lexical closure " + this.id + ">";
+        };
+        return Closure;
+    }(Lambda));
+    exports.Closure = Closure;
 });
 define("number", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -240,7 +268,7 @@ define("number", ["require", "exports"], function (require, exports) {
     Num.REGEX = /^\d+$/;
     exports.Num = Num;
 });
-define("reader", ["require", "exports", "atom", "number", "seq"], function (require, exports, atom_3, number_1, seq_2) {
+define("reader", ["require", "exports", "atom", "number", "seq"], function (require, exports, atom_3, number_1, seq_1) {
     "use strict";
     var DELIM = /\(|\)|\s+/;
     var Reader = (function () {
@@ -254,7 +282,7 @@ define("reader", ["require", "exports", "atom", "number", "seq"], function (requ
             }
         }
         Reader.prototype.isEval = function (e) {
-            return e.eval !== undefined;
+            return e && e.eval !== undefined;
         };
         Reader.prototype.getSexp = function (source) {
             if (source === void 0) { source = ""; }
@@ -298,7 +326,7 @@ define("reader", ["require", "exports", "atom", "number", "seq"], function (requ
                         }
                         token_1 = this.getToken();
                     }
-                    return new seq_2.List(expr);
+                    return new seq_1.List(expr);
                 }
             }
         };
@@ -374,6 +402,17 @@ define("litsp", ["require", "exports", "lisp", "fun", "atom", "reader", "environ
             var _this = _super.call(this) || this;
             _this.environment = new environment_1.default();
             _this.reader = new reader_1.Reader();
+            _this.closures = true;
+            // preserve lexical scope
+            _this.lambda_ = function (env, _a) {
+                var x = _a[0], xs = _a.slice(1);
+                if (_this.environment != env.get("__global__") && _this.closures) {
+                    return new fun_1.Closure(env, x, xs);
+                }
+                else {
+                    return new fun_1.Lambda(x, xs);
+                }
+            };
             _this.init();
             return _this;
         }
@@ -388,45 +427,26 @@ define("litsp", ["require", "exports", "lisp", "fun", "atom", "reader", "environ
             this.environment.set(new atom_4.Symb("lambda"), new fun_1.Func(this.lambda_, "lambda"));
             this.environment.set(new atom_4.Symb("label"), new fun_1.Func(this.label, "label"));
             this.environment.set(new atom_4.Symb("__litsp__"), this);
+            this.environment.set(new atom_4.Symb("__global__"), this.environment);
         };
         Litsp.prototype.process = function (source) {
             var sexpr = this.reader.getSexp(source);
             var result = null;
             while (sexpr != null && sexpr.data) {
-                try {
-                    result = this.eval(sexpr);
-                }
-                catch (e) {
-                    console.error(e);
-                }
+                result = this.eval(sexpr);
                 sexpr = this.reader.getSexp();
             }
             return result;
         };
         Litsp.prototype.eval = function (sexpr) {
-            try {
-                return sexpr.eval(this.environment);
-            }
-            catch (e) {
-                console.error(e);
-                return atom_4.FALSE;
-            }
+            return sexpr.eval(this.environment);
         };
-        Litsp.prototype.push = function (env) {
-            if (env === void 0) { env = null; }
-            if (env) {
-                this.environment = this.environment.push(env.binds); // TODO check?
-            }
-            else {
-                this.environment = this.environment.push();
-            }
+        Litsp.prototype.push = function (binds) {
+            if (binds === void 0) { binds = {}; }
+            this.environment = this.environment.push(binds); // TODO check?
         };
         Litsp.prototype.pop = function () {
             this.environment = this.environment.pop();
-        };
-        Litsp.prototype.lambda_ = function (env, _a) {
-            var x = _a[0], xs = _a.slice(1);
-            return new fun_1.Lambda(x, xs);
         };
         return Litsp;
     }(lisp_1.Lisp));
@@ -435,7 +455,7 @@ define("litsp", ["require", "exports", "lisp", "fun", "atom", "reader", "environ
 define("interface", ["require", "exports"], function (require, exports) {
     "use strict";
 });
-define("atom", ["require", "exports", "seq"], function (require, exports, seq_3) {
+define("atom", ["require", "exports", "seq"], function (require, exports, seq_2) {
     "use strict";
     var Atom = (function () {
         function Atom(data) {
@@ -465,7 +485,7 @@ define("atom", ["require", "exports", "seq"], function (require, exports, seq_3)
     }(Atom));
     exports.Symb = Symb;
     exports.TRUE = new Symb("t");
-    exports.FALSE = new seq_3.List();
+    exports.FALSE = new seq_2.List();
     var Str = (function (_super) {
         __extends(Str, _super);
         function Str(data) {
@@ -526,14 +546,21 @@ define("environment", ["require", "exports", "atom"], function (require, exports
             }
         };
         Environment.prototype.set = function (key, value) {
-            if (this.binds[key.data]) {
-                this.binds[key.data] = value;
+            var k;
+            if (key instanceof atom_5.Symb) {
+                k = key.data;
+            }
+            else {
+                k = key;
+            }
+            if (this.binds[k]) {
+                this.binds[k] = value;
             }
             else if (this.parent) {
                 this.parent.set(key, value);
             }
             else {
-                this.binds[key.data] = value;
+                this.binds[k] = value;
             }
         };
         Environment.prototype.definedp = function (key) {
@@ -546,27 +573,34 @@ define("environment", ["require", "exports", "atom"], function (require, exports
         Environment.prototype.pop = function () {
             return this.parent;
         };
+        Environment.prototype.toString = function () {
+            var s = "Environment ${this.level}\n";
+            for (var key in this.binds) {
+                s += "\t" + key + " : " + this.binds[key] + "\n";
+            }
+            return s;
+        };
         return Environment;
     }());
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Environment;
 });
-define("app", ["require", "exports", "environment", "atom", "number", "seq", "lisp", "litsp"], function (require, exports, environment_2, atom_6, number_2, seq_4, lisp_2, litsp_1) {
+define("app", ["require", "exports", "environment", "atom", "number", "seq", "lisp", "litsp"], function (require, exports, environment_2, atom_6, number_2, seq_3, lisp_2, litsp_1) {
     "use strict";
     function test1() {
         var data = { "a": new number_2.Num(1) };
         var env = new environment_2.default(null, data);
         var data2 = { "b": new number_2.Num(2) };
         var env2 = new environment_2.default(env, data2);
-        var list = new seq_4.List([new atom_6.Symb("a"),
+        var list = new seq_3.List([new atom_6.Symb("a"),
             new atom_6.Str("b"),
             new number_2.Num(3)]);
-        var list2 = new seq_4.List([new atom_6.Symb("a"),
+        var list2 = new seq_3.List([new atom_6.Symb("a"),
             new atom_6.Str("b"),
             new number_2.Num(3)]);
         console.log(list.equals(list2));
         var env3 = new environment_2.default();
-        var list3 = new seq_4.List();
+        var list3 = new seq_3.List();
         var s3 = new atom_6.Symb("s3");
         env.set(s3, list3);
         var lisp = new lisp_2.Lisp();
@@ -574,7 +608,7 @@ define("app", ["require", "exports", "environment", "atom", "number", "seq", "li
         console.log(e);
     }
     var litsp = new litsp_1.Litsp();
-    var program = "\n(label foo (lambda (x xs)\n              (cons x xs)))\n\n(foo 1 (quote (2 3)))\n";
+    var program = "\n(((lambda (x) (lambda (y) (cons x (cons y (quote ()))))) 3) 4)\n\n(cons \"a\" \"bc\")\n(cdr \"abc\")\n";
     var result = litsp.process(program);
     console.log(result.toString());
 });

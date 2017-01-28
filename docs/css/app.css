@@ -1,10 +1,12 @@
+.header {
+    margin-top: 30px;
+}
+
 div.console {
-    font-family: 'Inconsolata', monospace;
-    font-size: 18px;
+    font: 18px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
 div.console div.jquery-console-inner {
-    width:900px;
     height:400px;
     background:#333;
     padding:0.5em;
