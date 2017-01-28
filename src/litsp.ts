@@ -56,13 +56,7 @@ export class Litsp extends Lisp {
         let result: Eval = null;
 
         while (sexpr != null && sexpr.data) {
-
-            try {
-                result = this.eval(sexpr);
-            } catch(e) {
-                console.error(e);
-            }
-
+            result = this.eval(sexpr);
             sexpr = this.reader.getSexp();
         }
 
@@ -70,12 +64,7 @@ export class Litsp extends Lisp {
     }
 
     eval(sexpr: Eval): Eval {
-        try {
-            return sexpr.eval(this.environment);
-        } catch(e) {
-            console.error(e);
-            return FALSE;
-        }
+        return sexpr.eval(this.environment);
     }
 
     push(binds: Bindings = {}) {
