@@ -30,4 +30,29 @@ requirejs(["litsp"], function(litsp) {
         animateScroll: true,
         promptHistory: true
     });
+
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/textmate");
+    editor.getSession().setMode("ace/mode/lisp");
+    editor.getSession().setTabSize(2);
+
+    editor.commands.addCommand({
+        name: 'eval',
+        bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
+        exec: function (editor) {
+            var e = jQuery.Event("keydown");
+            e.which = 13;
+            e.keyCode = 13;
+
+            var code = "";
+            if (editor.getSelectedText().trim().length == 0) {
+                code = editor.getValue();
+            } else {
+                code = editor.getSelectedText();
+            }
+            controller.typer.consoleInsert(code);
+            controller.typer.trigger(e);
+        },
+        readOnly: true // false if this command should not apply in readOnly mode
+    });
 });

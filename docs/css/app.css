@@ -42,3 +42,8 @@ div.console div.jquery-console-message-type {
 div.console span.jquery-console-prompt-label {
     font-weight:bold
 }
+
+#editor { 
+    height:400px;
+    font-size: 18px;
+}
