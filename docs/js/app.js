@@ -86,5 +86,6 @@ requirejs(["litsp"], function(litsp) {
         loadCore = $('#load-core input:checkbox:checked').length > 0;
         useClosures = $('#use-closures input:checkbox:checked').length > 0;
         lisp.init(loadCore, useClosures);
+        controller.clearScreen();
     });
 });

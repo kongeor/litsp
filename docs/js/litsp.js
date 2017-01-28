@@ -394,15 +394,16 @@ define("reader", ["require", "exports", "atom", "number", "seq"], function (requ
     }());
     exports.Reader = Reader;
 });
-define("litsp", ["require", "exports", "lisp", "fun", "atom", "reader", "environment"], function (require, exports, lisp_1, fun_1, atom_4, reader_1, environment_1) {
+define("core", ["require", "exports"], function (require, exports) {
+    "use strict";
+    exports.core = "\n\n(label t (quote t))\n(label nil (quote ()))\n\n(label and (lambda (and_x and_y)\n             (cond (and_x\n                    (cond (and_y t)\n                          (t nil)))\n                   (t nil))))\n\n(label not (lambda (not_x)\n             (cond (not_x nil)\n                   (t t))))\n\n(label nand (lambda (nand_x nand_y)\n              (not (and nand_x nand_y))))\n\n(label or (lambda (or_x or_y)\n            (nand\n             (nand or_x or_x)\n             (nand or_y or_y))))\n\n(label nor (lambda (nor_x nor_y)\n             (not (or nor_x nor_y))))\n\n(label xor (lambda (xor_x xor_y)\n             (or\n              (and xor_x (not xor_y))\n              (and (not xor_x) xor_y))))\n\n(label and_ (lambda (x y) (cond (x (cond (y t) (t nil))) (t nil))))\n(label not_ (lambda (x) (cond (x nil) (t t))))\n(label nand_ (lambda (x y) (not_ (and_ x y))))\n(label or_ (lambda (x y) (nand_ (nand_ x x) (nand_ y y))))\n(label xor_ (lambda (x y) (or_ (and_ x (not_ y)) (and_ (not_ x) y))))\n\n(label pair (lambda (x y)\n              (cons x (cons y nil))))\n\n(label zip (lambda (x y)\n              (cond ((and (null x) (null y)) nil)\n                    ((and (not (atom x)) (not (atom y)))\n                     (cons (pair (car x) (car y))\n                           (zip (cdr x) (cdr y)))))))\n\n(label lookup (lambda (name context)\n                (cond ((eq (car (car context)) name) (car (cdr (car context))))\n                       (t (lookup name (cdr context))))))\n\n(label caar (lambda (x) (car (car x))))\n(label cadr (lambda (x) (car (cdr x))))\n(label caddr (lambda (x) (car (cdr (cdr x)))))\n(label cadar (lambda (x) (car (cdr (car x)))))\n(label caddar (lambda (x) (car (cdr (cdr (car x))))))\n(label cadddar (lambda (x) (car (cdr (cdr (cdr (car x)))))))\n\n(label null (lambda (null_x)\n              (eq null_x nil)))\n\n(label mapcar (lambda (mapcar_f mapcar_lst)\n                (cond\n                  ((null mapcar_lst) mapcar_lst)\n                  (t (cons\n                      (mapcar_f (car mapcar_lst))\n                      (mapcar mapcar_f (cdr mapcar_lst)))))))\n\n(label reduce (lambda (reduce_f reduce_lst)\n                (cond\n                  ((null reduce_lst) (reduce_f))\n                  (t (reduce_f (car reduce_lst)\n                               (reduce reduce_f (cdr reduce_lst)))))))\n\n(label append (lambda (append_x append_y)\n                (cond ((null append_x) append_y)\n                      (t (cons (car append_x) \n                               (append (cdr append_x) append_y))))))\n\n(label filter (lambda (filter_f filter_lst)\n                (cond\n                  ((null filter_lst) filter_lst)\n                  (t (cond\n                       ((filter_f (car filter_lst)) (cons\n                                                     (car filter_lst) \n                                                     (filter filter_f (cdr filter_lst))))\n                       (t (filter filter_f (cdr filter_lst))))))))\n\n(label env' (pair (pair (quote t) (quote t)) \n\t\t  (pair (quote nil) nil)))\n\n(label quote' (lambda (qexpr)\n                (car (cdr qexpr))))\n\n(label atom' (lambda (aexpr abinds)\n\t       (atom (eval (car (cdr aexpr)) abinds))))\n\n(label eq' (lambda (eexpr ebinds)\n\t     (eq (eval (car (cdr eexpr)) ebinds)\n\t\t (eval (car (cdr (cdr eexpr))) ebinds))))\n\n(label car' (lambda (caexpr cabinds)\n\t      (car (eval (car (cdr caexpr)) cabinds))))\n\n(label cdr' (lambda (cdexpr cdbinds)\n\t      (cdr (eval (car (cdr cdexpr)) cdbinds))))\n\n(label cons' (lambda (coexpr cobinds)\n\t       (cons   (eval (car (cdr coexpr)) cobinds)\n\t\t       (eval (car (cdr (cdr coexpr))) cobinds))))\n\n(label eval-cond (lambda (condition condbinds)\n                   (cond ((eval (car (car condition)) condbinds)\n                          (eval (car (cdr (car condition))) condbinds))\n                         (t (eval-cond (cdr condition) condbinds)))))\n\n(label cond' (lambda (cndexpr cndbinds)\n\t       (eval-cond (cdr cndexpr) cndbinds)))\n\n(label rewrite (lambda (rexpr rbinds)\n\t\t (cons (lookup (car rexpr) rbinds)\n\t\t       (cdr rexpr))))\n\n(label eval (lambda (expr binds)\n              (cond\n                ((atom expr) (lookup expr binds))\n                ((atom (car expr))\n                 (cond\n                   ((eq (car expr) (quote quote)) (quote' expr))\n                   ((eq (car expr) (quote atom))  (atom'  expr binds))\n                   ((eq (car expr) (quote eq))    (eq'    expr binds))\n                   ((eq (car expr) (quote car))   (car'   expr binds))\n                   ((eq (car expr) (quote cdr))   (cdr'   expr binds))\n                   ((eq (car expr) (quote cons))  (cons'  expr binds))\n                   ((eq (car expr) (quote cond))  (cond'  expr binds))\n                   (t (eval (rewrite expr binds) binds))))\n                ((eq (car (car expr)) (quote label))\n                 (eval (cons (car (cdr (cdr (car expr)))) (cdr expr))\n                       (cons (pair (car (cdr (car expr))) (car expr)) binds)))\n                ((eq (caar expr) (quote lambda))\n                 (eval (caddar expr)\n                       (append (zip (cadar expr) (eval-args (cdr expr) binds))\n                               binds)))\n                ((eq (caar expr) (quote macro))\n                 (cond\n                   ((eq (cadar expr) (quote lambda))\n                    (eval (eval (car (cdddar expr))\n                                (cons (pair (car (caddar expr)) \n                                             (cadr expr)) \n                                      binds))\n                          binds)))))))\n\n(label eval-args (lambda (eval-args_m eval-args_a)\n                   (cond ((null eval-args_m) nil)\n                         (t (cons (eval  (car eval-args_m) eval-args_a)\n                                  (eval-args (cdr eval-args_m) eval-args_a))))))\n\n(label apply (lambda (apply_name apply_args)\n               ((pair apply_name (pair (quote quote) apply_args)))))\n\n\n(label zero (lambda (s z) z))\n(label one (lambda (s z) (s z)))\n(label plus (lambda (m n) (lambda (f x) (m f (n f x)))))\n";
+});
+define("litsp", ["require", "exports", "lisp", "fun", "atom", "reader", "environment", "core"], function (require, exports, lisp_1, fun_1, atom_4, reader_1, environment_1, core_1) {
     "use strict";
     var Litsp = (function (_super) {
         __extends(Litsp, _super);
         function Litsp() {
             var _this = _super.call(this) || this;
-            _this.environment = new environment_1.default();
-            _this.reader = new reader_1.Reader();
-            _this.closures = true;
             // preserve lexical scope
             _this.lambda_ = function (env, _a) {
                 var x = _a[0], xs = _a.slice(1);
@@ -416,7 +417,14 @@ define("litsp", ["require", "exports", "lisp", "fun", "atom", "reader", "environ
             _this.init();
             return _this;
         }
-        Litsp.prototype.init = function () {
+        Litsp.prototype.init = function (loadCore, closures) {
+            if (loadCore === void 0) { loadCore = true; }
+            if (closures === void 0) { closures = true; }
+            console.info("Initializing Litsp with loadCore=" + loadCore + " and closures=" + closures);
+            this.loadCore = loadCore;
+            this.closures = closures;
+            this.environment = new environment_1.default();
+            this.reader = new reader_1.Reader();
             this.environment.set(new atom_4.Symb("eq"), new fun_1.Func(this.eq, "eq"));
             this.environment.set(new atom_4.Symb("quote"), new fun_1.Func(this.quote, "quote"));
             this.environment.set(new atom_4.Symb("car"), new fun_1.Func(this.car, "car"));
@@ -428,6 +436,9 @@ define("litsp", ["require", "exports", "lisp", "fun", "atom", "reader", "environ
             this.environment.set(new atom_4.Symb("label"), new fun_1.Func(this.label, "label"));
             this.environment.set(new atom_4.Symb("__litsp__"), this);
             this.environment.set(new atom_4.Symb("__global__"), this.environment);
+            if (loadCore) {
+                this.process(core_1.core);
+            }
         };
         Litsp.prototype.process = function (source) {
             var sexpr = this.reader.getSexp(source);

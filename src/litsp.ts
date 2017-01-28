@@ -5,6 +5,7 @@ import { Symb, FALSE } from './atom';
 import { List } from './seq';
 import { Reader } from './reader';
 import Environment from './environment';
+import { core } from './core';
 
 export class Litsp extends Lisp {
 
@@ -12,16 +13,12 @@ export class Litsp extends Lisp {
     reader: Reader;
 
     closures: boolean;
+    loadCore: boolean;
 
     lambda_: (env: Environment, [x, ...xs]: List[]) => Lambda;
     
     constructor() {
         super();
-
-        this.environment = new Environment();
-        this.reader = new Reader();
-
-        this.closures = true;
 
         // preserve lexical scope
         this.lambda_ = (env: Environment, [x, ...xs]: List[]): Lambda => {
@@ -35,7 +32,16 @@ export class Litsp extends Lisp {
         this.init();
     }
 
-    init(): void {
+    init(loadCore = true, closures = true): void {
+
+        console.info(`Initializing Litsp with loadCore=${loadCore} and closures=${closures}`);
+
+        this.loadCore = loadCore;
+        this.closures = closures;
+
+        this.environment = new Environment();
+        this.reader = new Reader();
+
         this.environment.set(new Symb("eq"), new Func(this.eq, "eq"));
         this.environment.set(new Symb("quote"), new Func(this.quote, "quote"));
         this.environment.set(new Symb("car"), new Func(this.car, "car"));
@@ -49,6 +55,10 @@ export class Litsp extends Lisp {
 
         this.environment.set(new Symb("__litsp__"), this);
         this.environment.set(new Symb("__global__"), this.environment);
+
+        if (loadCore) {
+            this.process(core);
+        }
     }
 
     process(source: string): Eval {
