@@ -1,10 +1,14 @@
 requirejs(["litsp"], function(litsp) {
 
+    var loadCore = true;
+    var useClosures = true;
+
     var lisp = new litsp.Litsp();
 
     var container = $('<div class="console">');
     $('#console').append(container);
     var controller = container.console({
+        welcomeMessage: 'The Litsp programming shell',
         promptLabel: 'Litsp> ',
         commandValidate: function (line) {
             if (line == "") return false;
@@ -54,5 +58,27 @@ requirejs(["litsp"], function(litsp) {
             controller.typer.trigger(e);
         },
         readOnly: true // false if this command should not apply in readOnly mode
+    });
+
+    var horizontalOrientation = true;
+
+    $('#change-orientation').on('click', function() {
+        if (horizontalOrientation) {
+            $('.editor-section').removeClass('seven').addClass('twelve');
+            $('.repl-section').removeClass('five').addClass('twelve');
+            $(this).val('Switch to horizontal');
+            horizontalOrientation = false;
+        } else {
+            $('.editor-section').removeClass('twelve').addClass('seven');
+            $('.repl-section').removeClass('twelve').addClass('five');
+            $(this).val('Switch to vertical');
+            horizontalOrientation = true;
+        }
+    });
+    
+    $('#reset-repl').on('click', function() {
+        loadCore = $('#load-core input:checkbox:checked').length > 0;
+        useClosures = $('#use-closures input:checkbox:checked').length > 0;
+        lisp.init(loadCore, useClosures);
     });
 });

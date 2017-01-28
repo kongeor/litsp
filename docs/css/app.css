@@ -2,12 +2,25 @@
     margin-top: 30px;
 }
 
+.section {
+    margin-bottom: 30px;
+}
+
+.repl-controls {
+    display: inline-block;
+    float: right;
+}
+
+.repl-controls label {
+    display: inline-block;
+}
+
 div.console {
     font: 18px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
 div.console div.jquery-console-inner {
-    height:400px;
+    height:385px;
     background:#333;
     padding:0.5em;
     overflow:auto
@@ -43,7 +56,14 @@ div.console span.jquery-console-prompt-label {
     font-weight:bold
 }
 
+div.console div.jquery-console-welcome {
+    color:#fff;
+    margin-bottom: 10px;
+    padding:0.1em;
+}
+
 #editor { 
     height:400px;
     font-size: 18px;
+    border: 1px solid #ccc;
 }

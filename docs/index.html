@@ -24,10 +24,25 @@
             </section>
         </div>
         <div class="row">
-            <div class="seven columns">
+            <input id="change-orientation" class="button-primary"
+                type="submit" value="Switch to vertical">
+            <div class="repl-controls">
+                <label id="load-core">
+                    <input type="checkbox" checked>
+                    <span class="label-body">Core</span>
+                </label>
+                <label id="use-closures">
+                    <input type="checkbox" checked>
+                    <span class="label-body">Closures</span>
+                </label>
+                <input id='reset-repl' class="button-primary" type="submit" value="Reset">
+            </div>
+        </div>
+        <div class="row">
+            <div class="seven columns section editor-section">
                 <div id="editor">(cons 1 (quote (2 3)))</div>
             </div>
-            <div class="five columns">
+            <div class="five columns section repl-section">
                 <div id="console"></div>
             </four>
         </div>
