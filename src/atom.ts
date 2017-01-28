@@ -66,4 +66,9 @@ export class Str extends Atom<string> implements ISeq<Str> {
     cons(e: Str): Str {
         return new Str(e.data + this.data);
     }
+
+    toString(): string {
+        return "\"" + this.data.toString() + "\"";
+    }
+
 }

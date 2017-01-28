@@ -17,13 +17,19 @@ requirejs(["litsp"], function(litsp) {
         commandHandle: function (line) {
             var out;
             var outClass;
-            try {
-                out = "=> " + lisp.process(line).toString(),
+
+            if (line === ":env") {
+                out = lisp.environment.toString();
                 outClass = "jquery-console-message-value";
-            } catch (e) {
-                console.error(e);
-                out = e.message;
-                outClass = "jquery-console-message-error";
+            } else {
+                try {
+                    out = "=> " + lisp.process(line).toString(),
+                        outClass = "jquery-console-message-value";
+                } catch (e) {
+                    console.error(e);
+                    out = e.message;
+                    outClass = "jquery-console-message-error";
+                }
             }
             return [{
                 msg: out,

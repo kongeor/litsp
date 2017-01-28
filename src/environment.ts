@@ -64,10 +64,12 @@ class Environment {
     }
 
     toString(): string {
-        let s = "Environment ${this.level}\n";
+        let s = `Environment ${this.level}\n\n`;
 
         for (let key in this.binds) {
-            s += `\t${key} : ${this.binds[key]}\n`;
+            if (!(key.substring(0,2) === "__")) {
+                s += `\t${key} : ${this.binds[key]}\n`;
+            }
         }
 
         return s;

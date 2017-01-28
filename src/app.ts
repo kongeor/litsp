@@ -43,5 +43,6 @@ let program = `
 (cdr "abc")
 `;
 
-let result = litsp.process(program);
+let result = litsp.environment.toString();
+// let result = litsp.process(program);
 console.log(result.toString());

@@ -508,6 +508,9 @@ define("atom", ["require", "exports", "seq"], function (require, exports, seq_2)
         Str.prototype.cons = function (e) {
             return new Str(e.data + this.data);
         };
+        Str.prototype.toString = function () {
+            return "\"" + this.data.toString() + "\"";
+        };
         return Str;
     }(Atom));
     exports.Str = Str;
@@ -574,9 +577,11 @@ define("environment", ["require", "exports", "atom"], function (require, exports
             return this.parent;
         };
         Environment.prototype.toString = function () {
-            var s = "Environment ${this.level}\n";
+            var s = "Environment " + this.level + "\n\n";
             for (var key in this.binds) {
-                s += "\t" + key + " : " + this.binds[key] + "\n";
+                if (!(key.substring(0, 2) === "__")) {
+                    s += "\t" + key + " : " + this.binds[key] + "\n";
+                }
             }
             return s;
         };
@@ -609,7 +614,8 @@ define("app", ["require", "exports", "environment", "atom", "number", "seq", "li
     }
     var litsp = new litsp_1.Litsp();
     var program = "\n(((lambda (x) (lambda (y) (cons x (cons y (quote ()))))) 3) 4)\n\n(cons \"a\" \"bc\")\n(cdr \"abc\")\n";
-    var result = litsp.process(program);
+    var result = litsp.environment.toString();
+    // let result = litsp.process(program);
     console.log(result.toString());
 });
 //# sourceMappingURL=litsp.js.map
