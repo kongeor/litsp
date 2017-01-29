@@ -1,4 +1,15 @@
-requirejs(["litsp"], function(litsp) {
+requirejs.config({
+    "paths": {
+      "jquery": "jquery-3.1.1.min",
+      "jconsole": "jquery.console",
+      ace: "ace"
+    },
+    "shim": {
+        "jconsole"  : ["jquery"]
+    }
+});
+
+requirejs(["jquery", "litsp", "ace/ace", "jconsole"], function($, litsp, ace) {
 
     var loadCore = true;
     var useClosures = true;
@@ -42,7 +53,7 @@ requirejs(["litsp"], function(litsp) {
     });
 
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/textmate");
+    // editor.setTheme("ace/theme/textmate");
     editor.getSession().setMode("ace/mode/lisp");
     editor.getSession().setTabSize(2);
 
@@ -50,7 +61,7 @@ requirejs(["litsp"], function(litsp) {
         name: 'eval',
         bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
         exec: function (editor) {
-            var e = jQuery.Event("keydown");
+            var e = $.Event("keydown");
             e.which = 13;
             e.keyCode = 13;
 
